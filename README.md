@@ -8,6 +8,8 @@
 - Тесты - Unit (тесты обработчиков), Функциональные тесты
 - CI/CD - Workflow GitHub (CI) и отправка на сервер (CD)
 
+# С Начала до 21:34
+
 ## Структура проекта:
 - cmd папка - внутри cmd лежат команды для взаимодействия с приложением (запуск и т.д.)
 - config - папка по настройки параметров для нашего приложения
@@ -66,3 +68,15 @@ http_server:
   user: 123
   password: 123
 ```
+
+# От 21:34
+
+## Возможные ошибки:
+
+### Ошибка: msg="failed to init storage" error="storage.sqlite.New: Binary was compiled with 'CGO_ENABLED=0', go-sqlite3 requires cgo to work. This is a stub"
+
+Вот <a href="https://github.com/mattn/go-sqlite3/issues/855#issuecomment-2267489894" target="_blank">ответ</a> на эту ошибку и на последующую. Но если вкртце, для Windows пропишите в терминале `go env -w CGO_ENABLED=1` и затем скачайте tdm64-gcc <a href="https://jmeubank.github.io/tdm-gcc/" target="_blank">последняя версия</a>, после чего перезапустите VSCode.
+Для других OC решение описано по ссылке выше.
+
+### Открываем файл .db
+Вы можете самостоятельно скачать программу DBeaver или скачать расшерение SQLite <a href="https://www.youtube.com/watch?v=By-UUTO09xA" target="_blank">подробне</a>
