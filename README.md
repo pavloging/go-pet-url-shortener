@@ -69,7 +69,7 @@ http_server:
   password: 123
 ```
 
-# От 21:34
+# От 21:34 до 43:56
 
 ## Возможные ошибки:
 
@@ -80,3 +80,5 @@ http_server:
 
 ### Открываем файл .db
 Вы можете самостоятельно скачать программу DBeaver или скачать расшерение SQLite <a href="https://www.youtube.com/watch?v=By-UUTO09xA" target="_blank">подробне</a>
+
+# Метод DeleteURL
