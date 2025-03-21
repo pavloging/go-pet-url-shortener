@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log/slog"
 	"os"
 	"url-shortener/internal/config"
@@ -28,12 +27,13 @@ func main() {
 		os.Exit(1)
 	}
 
-	alias, err1 := storage.GetUrl("google")
-	if err1 != nil {
-		log.Error("failed to init storage", sl.Err(err))
-		os.Exit(1)
-	}
-	fmt.Println(alias)
+	// alias, _ := storage.GetUrl("google")
+	// fmt.Println(alias)
+
+	storage.SaveURL("https://vk.com", "vk")
+
+	count, _ := storage.DeleteURL("vk")
+	log.Info("item deleted: ", slog.Int64("count", count))
 
 	_ = storage
 

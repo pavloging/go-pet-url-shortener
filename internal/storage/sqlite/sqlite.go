@@ -66,7 +66,7 @@ func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 }
 
 func (s *Storage) GetUrl(alias string) (string, error) {
-	const op = "storage.sqlite.GetUrl"
+	const fn = "storage.sqlite.GetUrl"
 
 	var url string
 	err := s.db.QueryRow("SELECT url FROM url WHERE alias = ?", alias).Scan(&url) // .Scan(&url) необходим для извлечения данных из результата SQL-запроса.
@@ -75,10 +75,24 @@ func (s *Storage) GetUrl(alias string) (string, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", storage.ErrURLNotFound
 		}
-		return "", fmt.Errorf("%s: execute statement %w", op, err)
+		return "", fmt.Errorf("%s: execute statement %w", fn, err)
 	}
 
 	return url, nil
 }
 
-// func (s *Storage) DeleteURL(alias string) (error) {
+func (s *Storage) DeleteURL(alias string) (int64, error) {
+	const fn = "storage.sqlite.DeleteURL"
+
+	result, err := s.db.Exec("DELETE FROM url WHERE alias = ?", alias)
+	if err != nil {
+		return 0, fmt.Errorf("%s: execute statement %w", fn, err)
+	}
+
+	rowsAffected, err := result.RowsAffected() // Считаем сколько удалили
+	if err != nil {
+		return 0, fmt.Errorf("%s: get rows affected: %w", fn, err) // Возвращаем 0 и ошибку
+	}
+
+	return rowsAffected, nil
+}
