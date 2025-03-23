@@ -2,6 +2,7 @@ package main
 
 import (
 	"log/slog"
+	"net/http"
 	"os"
 	"url-shortener/internal/config"
 	"url-shortener/internal/lib/logger/handlers/slogpretty"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"url-shortener/internal/http-server/handlers/url/save"
 	mwLogger "url-shortener/internal/http-server/middleware/logger"
 )
 
@@ -38,16 +40,27 @@ func main() {
 
 	router.Use(middleware.RequestID) // Хороший middleware для логирования
 	router.Use(mwLogger.New(log))    // Хороший middleware для логирования (custom)
-
 	router.Use(middleware.Logger)    // Логирует все входящие запросы
 	router.Use(middleware.Recoverer) // Перехватывает паники и возвращает 500
 	router.Use(middleware.URLFormat) // Для красивых URL при подключении к обработчикам
 
-	_ = storage
+	router.Post("/url", save.New(log, storage))
 
-	// TODO: init router: chi, "chi render"
+	log.Info("starting server", slog.String("address", cfg.Address))
 
-	// TODO: run server
+	srv := &http.Server{
+		Addr:         cfg.Address,
+		Handler:      router,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+
+	if err := srv.ListenAndServe(); err != nil {
+		log.Error("failed to start server")
+	}
+
+	log.Info("server stopped")
 }
 
 func setupLogger(env string) *slog.Logger {
@@ -55,7 +68,7 @@ func setupLogger(env string) *slog.Logger {
 
 	switch env {
 	case envLocal:
-		log = setupPrettySlog()
+		log = setupPrettySlog() // Для локальный разработки - самописный logger
 	case envProd:
 		log = slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}))
 	}

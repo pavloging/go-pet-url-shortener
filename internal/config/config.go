@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -26,6 +27,7 @@ type HTTPServer struct {
 // MustLoad загружает конфигурацию из конфиг-файла и возвращает ее экземпляр
 func MustLoad() *Config {
 	err := godotenv.Load()
+	fmt.Println(err)
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
