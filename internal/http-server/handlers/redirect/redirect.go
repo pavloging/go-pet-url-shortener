@@ -14,7 +14,7 @@ import (
 )
 
 type URLGetter interface {
-	GetUrl(alias string) (string, error)
+	GetURL(alias string) (string, error)
 }
 
 func New(log *slog.Logger, urlGetter URLGetter) http.HandlerFunc {
@@ -33,7 +33,7 @@ func New(log *slog.Logger, urlGetter URLGetter) http.HandlerFunc {
 			return
 		}
 
-		url, err := urlGetter.GetUrl(alias)
+		url, err := urlGetter.GetURL(alias)
 		if errors.Is(err, storage.ErrURLNotFound) {
 			log.Info("url not found", "alias", alias)
 			render.JSON(w, r, resp.Error("internal error"))

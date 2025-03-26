@@ -50,10 +50,18 @@ func main() {
 	router.Use(middleware.Recoverer) // Перехватывает паники и возвращает 500
 	router.Use(middleware.URLFormat) // Для красивых URL при подключении к обработчикам
 
-	// Handlers
-	router.Post("/url", save.New(log, storage))
+	// Handlers with Auth
+	router.Route("/url", func(r chi.Router) {
+		r.Use(middleware.BasicAuth("url-shortener", map[string]string{
+			cfg.Auth.User: cfg.Auth.Password,
+		}))
+
+		r.Post("/", save.New(log, storage))
+		r.Delete("/{alias}", delete.New(log, storage))
+	})
+
+	// Handlers without Auth
 	router.Get("/{alias}", redirect.New(log, storage))
-	router.Delete("/{alias}", delete.New(log, storage))
 
 	log.Info("starting server", slog.String("address", cfg.Address))
 

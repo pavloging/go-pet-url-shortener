@@ -65,8 +65,8 @@ func (s *Storage) SaveURL(urlToSave string, alias string) (int64, error) {
 	return id, nil
 }
 
-func (s *Storage) GetUrl(alias string) (string, error) {
-	const fn = "storage.sqlite.GetUrl"
+func (s *Storage) GetURL(alias string) (string, error) {
+	const fn = "storage.sqlite.GetURL"
 
 	var url string
 	err := s.db.QueryRow("SELECT url FROM url WHERE alias = ?", alias).Scan(&url) // .Scan(&url) необходим для извлечения данных из результата SQL-запроса.
