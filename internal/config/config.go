@@ -15,6 +15,8 @@ type Config struct {
 	StoragePath string `yaml:"storage_path" env-required:"true"`
 	HTTPServer  `yaml:"http_server"`
 	Auth        `yaml:"auth"`
+	Clients     ClientsConfig `yaml:"clients"`
+	AppSecret   string        `yaml:"app_secret" env-required:"true" env:"APP_SECRET"`
 }
 
 type Auth struct {
@@ -26,6 +28,16 @@ type HTTPServer struct {
 	Address     string        `yaml:"address" env-default:"localhost:8080"`
 	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
+}
+
+type Client struct {
+	Address      string        `yaml:"address"`
+	Timeout      time.Duration `yaml:"timeout"`
+	RetriesCount int           `yaml:"retries_count"`
+}
+
+type ClientsConfig struct {
+	SSO Client `yaml:"sso"`
 }
 
 func MustLoad() *Config {
@@ -63,6 +75,16 @@ func MustLoad() *Config {
 
 	if cfg.Auth.User == "" || cfg.Auth.Password == "" {
 		log.Fatal("Username and Password is empty")
+	}
+
+	if cfg.AppSecret == "" {
+		cfg.AppSecret = os.Getenv("APP_SECRET")
+	}
+
+	cfg.Clients.SSO = Client{
+		Address:      os.Getenv("SSO_ADDRESS"),
+		Timeout:      4 * time.Second, // Значение по умолчанию
+		RetriesCount: 3,               // Значение по умолчанию
 	}
 
 	return &cfg
